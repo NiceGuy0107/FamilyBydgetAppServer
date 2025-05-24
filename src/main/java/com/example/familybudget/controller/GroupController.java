@@ -140,8 +140,8 @@ public class GroupController {
 
     @PostMapping("/add-transaction")
     public ResponseEntity<?> addTransaction(@RequestBody AddTransactionRequest request) {
-        logger.info("Запрос на добавление транзакции: группа {} сумма {} пользователь {} дата {}",
-                request.getGroupId(), request.getAmount(), request.getUsername(), request.getDateTime());
+        logger.info("Received add transaction request with data: groupId={}, amount={}, username={}, type={}, dateTime={}",
+                request.getGroupId(), request.getAmount(), request.getUsername(), request.getType(), request.getDateTime());
 
         try {
             Transaction transaction = groupService.addTransaction(
@@ -151,12 +151,12 @@ public class GroupController {
                     TransactionType.valueOf(request.getType()),
                     request.getDateTime()
             );
-            logger.info("Транзакция успешно добавлена: {}", transaction);
+            logger.info("Transaction successfully added with ID: {}, date: {}", transaction.getId(), transaction.getDate());
             return ResponseEntity.ok(new AddTransactionRequest(transaction));
         } catch (Exception e) {
-            logger.error("Ошибка при добавлении транзакции: ", e);
+            logger.error("Error adding transaction. Request data: " + request, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Ошибка при добавлении транзакции: " + e.getMessage());
+                    .body("Error adding transaction: " + e.getMessage());
         }
     }
 }

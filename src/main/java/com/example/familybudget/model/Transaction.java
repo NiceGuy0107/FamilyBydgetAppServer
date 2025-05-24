@@ -1,9 +1,19 @@
 package com.example.familybudget.model;
 
-
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "transaction")
@@ -18,7 +28,8 @@ public class Transaction {
     private double amount;
 
     @Column(name = "date")
-    private LocalDateTime date;  // Измените тип на LocalDateTime
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    private LocalDateTime date;
 
     @Enumerated(EnumType.STRING)
     private TransactionType type;
@@ -60,11 +71,11 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public LocalDateTime getDate() {  // Измените возвращаемый тип на LocalDateTime
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {  // Убедитесь, что тип параметра LocalDateTime
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
