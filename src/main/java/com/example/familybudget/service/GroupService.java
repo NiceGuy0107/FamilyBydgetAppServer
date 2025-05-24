@@ -1,5 +1,13 @@
 package com.example.familybudget.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.familybudget.model.FamilyGroup;
 import com.example.familybudget.model.Transaction;
 import com.example.familybudget.model.TransactionType;
@@ -7,12 +15,6 @@ import com.example.familybudget.model.User;
 import com.example.familybudget.repository.GroupRepository;
 import com.example.familybudget.repository.TransactionRepository;
 import com.example.familybudget.repository.UserRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
 
 
 @Service
@@ -21,6 +23,7 @@ public class GroupService {
     private final GroupRepository groupRepo;
     private final UserRepository userRepo;
     private final TransactionRepository txnRepo;
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GroupService.class);
 
     public GroupService(GroupRepository groupRepo, UserRepository userRepo, TransactionRepository txnRepo) {
         this.groupRepo = groupRepo;
@@ -117,7 +120,10 @@ public class GroupService {
     }
 
     @Transactional
-    public Transaction addTransaction(Long groupId, double amount, String username, TransactionType type) {
+    public Transaction addTransaction(Long groupId, double amount, String username, TransactionType type, LocalDateTime dateTime) {
+        logger.info("Добавление транзакции: groupId={}, amount={}, username={}, type={}, dateTime={}", 
+            groupId, amount, username, type, dateTime);
+
         FamilyGroup group = groupRepo.findById(groupId)
                 .orElseThrow(() -> new NoSuchElementException("Группа не найдена"));
 
@@ -132,11 +138,10 @@ public class GroupService {
         transaction.setGroup(group);
         transaction.setUser(user);
         transaction.setAmount(amount);
-        transaction.setDate(LocalDateTime.now());
-
-        // Используем переданный тип, а не вычисляем
+        transaction.setDate(dateTime != null ? dateTime : LocalDateTime.now());
         transaction.setType(type);
 
+        logger.info("Сохранение транзакции с датой: {}", transaction.getDate());
         return txnRepo.save(transaction);
     }
 }

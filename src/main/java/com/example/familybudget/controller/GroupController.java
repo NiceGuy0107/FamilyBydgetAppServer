@@ -140,15 +140,16 @@ public class GroupController {
 
     @PostMapping("/add-transaction")
     public ResponseEntity<?> addTransaction(@RequestBody AddTransactionRequest request) {
-        logger.info("Запрос на добавление транзакции: группа {} сумма {} пользователь {}",
-                request.getGroupId(), request.getAmount(), request.getUsername());
+        logger.info("Запрос на добавление транзакции: группа {} сумма {} пользователь {} дата {}",
+                request.getGroupId(), request.getAmount(), request.getUsername(), request.getDateTime());
 
         try {
             Transaction transaction = groupService.addTransaction(
                     request.getGroupId(),
                     request.getAmount(),
                     request.getUsername(),
-                    TransactionType.valueOf(request.getType())
+                    TransactionType.valueOf(request.getType()),
+                    request.getDateTime()
             );
             logger.info("Транзакция успешно добавлена: {}", transaction);
             return ResponseEntity.ok(new AddTransactionRequest(transaction));
